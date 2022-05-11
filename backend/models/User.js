@@ -17,6 +17,10 @@ const User = mongoose.model('User',
         phone: {
             type: String,
             required: true
+        },
+        password:{
+            type: String,
+            required: true
         }
     }, { timestamps: true }));
        //cria duas colunas: created_at e updated_at
