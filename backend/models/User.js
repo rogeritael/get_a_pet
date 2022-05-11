@@ -18,9 +18,8 @@ const User = mongoose.model('User',
             type: String,
             required: true
         }
-    }),
-    { timestamps: true }
-    //cria duas colunas: created_at e updated_at
-);
+    }, { timestamps: true }));
+       //cria duas colunas: created_at e updated_at
+
 
 module.exports = User;
