@@ -113,6 +113,33 @@ class UserController
 
         res.status(200).send(currentUser);
     }
+
+    static async getUserById(req, res){
+        const { id } = req.params;
+
+        try {
+            const user = await User.findById(id).select("-password");
+            res.status(200).json({ user });
+        } catch (error) {
+            res.status(422).json({ message: 'usuário não encontrado' });
+        }
+    }
+
+    static async editUser(req, res){
+        const { name, phone } = req.body;
+        const { id } = req.params;
+
+        // const user = await User.findById(id);
+        const user = {
+            name,
+            phone
+        };
+
+        await User.findByIdAndUpdate(id, { user });
+
+
+
+    }
 }
 
 module.exports = UserController;
