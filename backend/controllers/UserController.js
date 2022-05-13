@@ -3,6 +3,7 @@ const bcrypt = require('bcrypt');
 const createUserToken = require('../helpers/create-user-token');
 const getToken = require('../helpers/get-token');
 const jwt = require('jsonwebtoken');
+const getUserByToken = require('../helpers/get-user-by-token');
 
 class UserController
 {
@@ -126,18 +127,48 @@ class UserController
     }
 
     static async editUser(req, res){
-        const { name, phone } = req.body;
         const { id } = req.params;
-
-        // const user = await User.findById(id);
-        const user = {
-            name,
-            phone
-        };
-
-        await User.findByIdAndUpdate(id, { user });
+        const token = req.headers['x-access-token'];
+        const user = await getUserByToken(token);
+        const { name, email, phone, password, confirmpassword } = req.body;
+        let image = '';
 
 
+        //validations
+        if(!name){
+            res.status(422).json({ message: 'O nome é obrigatório' });
+            return;
+        }
+
+        user.name = name;
+
+        if(!email){
+            res.status(422).json({ message: 'O email é obrigatório' });
+            return;
+        }
+
+        const userExists = await User.findOne({email: email});
+        if(user.email !== email && userExists){
+            res.status(422).json({ message: 'Usuário não encontrado'});
+            return;
+        }
+
+        if(!phone){
+            res.status(422).json({ message: 'O telefone é obrigatório' });
+            return;
+        }
+
+        if(!password){
+            res.status(422).json({ message: 'A senha é obrigatória' });
+            return;
+        }
+
+        if(!confirmpassword){
+            res.status(422).json({ message: 'A confirmação de senha é obrigatória' });
+            return;
+        }
+
+        res.status(201).json('updated');
 
     }
 }
