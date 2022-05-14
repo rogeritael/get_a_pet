@@ -131,8 +131,10 @@ class UserController
         const token = req.headers['x-access-token'];
         const user = await getUserByToken(token);
         const { name, email, phone, password, confirmpassword } = req.body;
-        let image = '';
 
+        if(req.file){
+            user.image = req.file.filename;
+        }
 
         //validations
         if(!name){
