@@ -2,6 +2,7 @@ const Pet = require('../models/Pet');
 
 const getUserByToken = require('../helpers/get-user-by-token');
 const { default: mongoose } = require('mongoose');
+const { findByIdAndUpdate } = require('../models/Pet');
 const ObjectId = require('mongoose').Types.ObjectId;
 
 class PetController {
@@ -232,6 +233,30 @@ class PetController {
 
         await Pet.findByIdAndUpdate(id, pet); 
         res.status(200).json({ message: `A visita foi agendada com sucesso. Entre em contato com ${pet.user.name} pelo telefone ${pet.user.phone}`});
+    }
+
+    static async concludeAdoption(req, res){
+        const { id } = req.params;
+         
+        const petExists = mongoose.Types.ObjectId.isValid(id);
+        if(!petExists){ 
+            res.status(404).json({message: 'não encontrado'});
+            return;
+        }
+
+        const pet = await Pet.findOne({ _id: id });
+        // check if user registered the pet
+        const token = req.headers['x-access-token'];
+        const user = await getUserByToken(token);
+
+        if(!pet.user._id.equals(user._id)){
+            res.status(422).json({ message: 'Houve um problema' });
+            return;
+        }
+
+        pet.available = false;
+        await Pet.findByIdAndUpdate(id, pet);
+        res.status(200).json({ message: 'Parabéns! O ciclo de adoção foi finalizado com sucesso' });
     }
 }
 
