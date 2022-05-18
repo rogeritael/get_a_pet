@@ -1,6 +1,7 @@
 const Pet = require('../models/Pet');
 
 const getUserByToken = require('../helpers/get-user-by-token');
+const { default: mongoose } = require('mongoose');
 const ObjectId = require('mongoose').Types.ObjectId;
 
 class PetController {
@@ -191,6 +192,46 @@ class PetController {
 
         await Pet.findByIdAndUpdate(id, updatedData);
         res.status(200).json({ message: 'Pet atualizado com sucesso' });
+    }
+
+    static async schedule(req, res){
+        const { id } = req.params;
+
+        // const pet = await Pet.findById(id);
+        const petExists = mongoose.Types.ObjectId.isValid(id);
+        if(!petExists){ 
+            res.status(404).json({message: 'não encontrado'});
+            return;
+        }
+
+        const pet = await Pet.findOne({ _id: id });
+
+        // check if user registered the pet
+        const token = req.headers['x-access-token'];
+        const user = await getUserByToken(token);
+
+        if(pet.user._id.equals(user._id)){
+            res.status(422).json({ message: 'Você não pode agendar uma visita com o seu próprio pet' });
+            return;
+        }
+
+        //already schedule?
+        if(pet.adopter){
+            if(pet.adopter._id.equals(user._id)){
+                res.status(422).json({ message: 'Você já agendou uma visita para este pet' });
+                return;
+            }
+        }
+
+        //add user to pet
+        pet.adopter = {
+            _id: user._id,
+            name: user.name,
+            image: user.image
+        }
+
+        await Pet.findByIdAndUpdate(id, pet); 
+        res.status(200).json({ message: `A visita foi agendada com sucesso. Entre em contato com ${pet.user.name} pelo telefone ${pet.user.phone}`});
     }
 }
 

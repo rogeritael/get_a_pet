@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 
-const getUserById = async (token) => {
+const getUserByToken = async (token) => {
 
     if(!token){
         return resizeBy.statys(401).json({message: 'Acesso negado!'});
@@ -14,4 +14,4 @@ const getUserById = async (token) => {
     return user;
 }
 
-module.exports = getUserById;
+module.exports = getUserByToken;
