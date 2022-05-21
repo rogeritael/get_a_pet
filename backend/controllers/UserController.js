@@ -176,7 +176,7 @@ class UserController
 
         try {
             
-            const updateduser = await User.findByIdAndUpdate({ _id: user._id }, { $set: user }, { new: true })
+            const updateduser = await User.findByIdAndUpdate({ _id: user._id }, { $set: user }, { new: true });
             res.status(200).json({ message: 'Usuário atualizado com sucesso' });
         } catch (error) {
             res.status(500).json({ message: error });

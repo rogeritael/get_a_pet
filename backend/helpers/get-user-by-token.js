@@ -4,7 +4,7 @@ const User = require('../models/User');
 const getUserByToken = async (token) => {
 
     if(!token){
-        return resizeBy.statys(401).json({message: 'Acesso negado!'});
+        return res.status(401).json({message: 'Acesso negado!'});
     }
 
     const decoded = jwt.verify(token, 'nossosecret');
