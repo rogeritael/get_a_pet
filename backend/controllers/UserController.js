@@ -97,7 +97,7 @@ class UserController
     }
 
     static async checkUser(req, res){
-        let currentUser;
+        let currentUser; 
 
         if(req.headers){
             
