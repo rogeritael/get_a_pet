@@ -1,42 +1,17 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Login from './components/pages/Auth/Login';
-import Register from './components/pages/Auth/Register';
-import Home from './components/pages/Home';
-import Profile from './components/pages/User/Profile';
-import MyPets from './components/pages/Pet/MyPets';
-import AddPet from './components/pages/Pet/AddPet';
+import {BrowserRouter as Router, Routes, Route} from 'react-router-dom';
 
+import {Home} from './components/pages/Home';
+import {Login} from './components/pages/Auth/Login';
+import {Register} from './components/pages/Auth/Register';
 
-//components
-import Navbar from './components/layout/Navbar';
-import Footer from './components/layout/Footer';
-import Container from './components/layout/Container';
-import Message from './components/layout/Message';
-
-// context
-import { UserProvider } from './context/UserContext';
-
-
-function App() {
+export default function App() {
   return (
     <Router>
-      <UserProvider>
-        <Navbar/>
-          <Message />
-          <Container>
-            <Routes>
-              <Route path="/login" element={<Login />} />
-              <Route path="/register" element={<Register />} />
-              <Route path="/" element={<Home />} />
-              <Route path="/user/profile" element={<Profile />} />
-              <Route path="/pet/mypets" element={<MyPets />} /> 
-              <Route path="/pet/add" element={<AddPet />} /> 
-            </Routes>
-          </Container>
-        <Footer/>
-      </UserProvider>
-    </Router>  
+      <Routes>
+        <Route path="/" element={<Home/>} />
+        <Route path="/register" element={<Register/>} />
+        <Route path="/login" element={<Login/>} />
+      </Routes>
+    </Router>
   );
 }
-
-export default App;
