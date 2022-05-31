@@ -8,9 +8,12 @@ import {Home} from './components/pages/Home';
 import {Login} from './components/pages/Auth/Login';
 import {Register} from './components/pages/Auth/Register';
 
+import {UserProvider} from './context/UserContext';
+
 export default function App() {
   return (
     <Router>
+      <UserProvider>
       <Navbar />
       <Container>
         <Routes>
@@ -20,6 +23,7 @@ export default function App() {
         </Routes>
       </Container>
       <Footer />
+      </UserProvider>
     </Router>
   );
 }
