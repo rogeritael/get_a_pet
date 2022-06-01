@@ -7,6 +7,7 @@ import {Container} from './components/layout/Container';
 import {Home} from './components/pages/Home';
 import {Login} from './components/pages/Auth/Login';
 import {Register} from './components/pages/Auth/Register';
+import { Message } from './components/layout/Message';
 
 import {UserProvider} from './context/UserContext';
 
@@ -15,6 +16,7 @@ export default function App() {
     <Router>
       <UserProvider>
       <Navbar />
+      <Message />
       <Container>
         <Routes>
           <Route path="/" element={<Home/>} />
