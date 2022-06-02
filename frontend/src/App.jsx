@@ -8,6 +8,7 @@ import {Home} from './components/pages/Home';
 import {Login} from './components/pages/Auth/Login';
 import {Register} from './components/pages/Auth/Register';
 import { Message } from './components/layout/Message';
+import { Profile } from './components/pages/User/Profile';
 
 import {UserProvider} from './context/UserContext';
 
@@ -22,6 +23,7 @@ export default function App() {
           <Route path="/" element={<Home/>} />
           <Route path="/register" element={<Register/>} />
           <Route path="/login" element={<Login/>} />
+          <Route path="user/profile" element={<Profile />}/>
         </Routes>
       </Container>
       <Footer />
