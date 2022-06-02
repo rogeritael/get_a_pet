@@ -21,6 +21,7 @@ export function Register(){
 
     return(
         <section className={styles.form_container}>
+            <h1>Cadastrar</h1>
             <form onSubmit={handleSubmit}>
                 <Input
                     text="Nome"
