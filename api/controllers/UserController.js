@@ -1,6 +1,10 @@
 const User = require('../models/User');
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 const createUserToken = require('../helpers/create_user_token');
+const { findOne } = require('../models/User');
+const req = require('express/lib/request');
+const res = require('express/lib/response');
 
 module.exports = class UserController {
 
@@ -59,5 +63,59 @@ module.exports = class UserController {
         
     }
 
-    
+    static async login(req, res){
+        const {email, password} = req.body;
+
+        if(!email){
+            res.status(422).json({message: 'O email é obrigatório'});
+            return;
+        }
+        if(!password){
+            res.status(422).json({message: 'A senha é obrigatória'});
+            return;
+        }
+        
+        try{
+            const user = await User.findOne({email});
+            const checkPassword = await bcrypt.compare(password, user.password);
+
+            if(!checkPassword){
+                res.status(422).json({message: 'Senha incorreta'});
+                return;
+            }
+
+            await createUserToken(user, req, res);
+        }catch(error){
+            res.status(422).json({message: 'Nenhum usuário encontrado com este endereço de email'});
+            return;
+        }
+    }
+
+    static async checkUser(req, res){
+        let currentUser;
+        console.log(req.headers.authorization)
+
+        if(req.headers.authorization){
+            const token = req.headers.authorization;
+            const decoded = jwt.verify(token, 'nossosecret');
+
+            currentUser = await User.findById(decoded.id);
+            currentUser.password = undefined;
+        }else{
+            currentUser = null; 
+        }
+
+        res.status(200).send({'user': currentUser});
+    }
+
+    static async getUserById(req, res){
+        const {id} = req.params;
+
+        try{
+            const user = await User.findById(id).select('-password');
+            res.status(200).json(user);
+        }catch(e){
+            res.status(422).json({message: 'Nenhum usuário encontrado'});
+        }
+    }
 }
