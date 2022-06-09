@@ -118,10 +118,9 @@ module.exports = class UserController {
     }
 
     static async editUser(req, res){
+        const user = await getUserByToken(req.headers.authorization);
         const {name, email, phone, password, confirmpassword} = req.body;
-
         try{
-            const user = await getUserByToken(req.headers.authorization);
 
             if(!name){
                 res.status(422).json({message: 'O nome é obrigatório'});
@@ -136,24 +135,31 @@ module.exports = class UserController {
                 res.status(422).json({message: 'Já existe um usuário cadastrado com este endereço de email'});
                 return;
             }
-    
-    
             if(!phone){
                 res.status(422).json({message: 'O telefone é obrigatório'});
                 return;
             }
-            if(!password){
-                res.status(422).json({message: 'A senha é obrigatória'});
+
+            user.name = name;
+            user.email = email;
+            user.phone = phone; 
+
+            if(password !== confirmpassword){
+                res.status(422).json({message: 'As senhas não coicidem'});
                 return;
+            }else if(password === confirmpassword && password !== null){
+                const salt = await bcrypt.genSalt(12);
+                const hashedPassword = await bcrypt.hash(password, salt);
+
+                user.password = hashedPassword;
             }
-            if(!confirmpassword){
-                res.status(422).json({message: 'A confirmação de senha é obrigatória'});
-                return;
+
+            try{
+                await User.findOneAndUpdate({id: user._id}, {$set: user}, {new: true});
+                res.status(200).json({message: 'Usuário atualizado com sucesso'});
+            }catch(error){
+                res.status(422).json({message: error})
             }
-
-
-
-
             
         }catch(e){
             res.status(422).json({message: 'Usuário não encontrado'});
