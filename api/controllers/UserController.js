@@ -2,9 +2,7 @@ const User = require('../models/User');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const createUserToken = require('../helpers/create_user_token');
-const { findOne } = require('../models/User');
-const req = require('express/lib/request');
-const res = require('express/lib/response');
+const getUserByToken = require('../helpers/get_user_by_token');
 
 module.exports = class UserController {
 
@@ -116,6 +114,49 @@ module.exports = class UserController {
             res.status(200).json(user);
         }catch(e){
             res.status(422).json({message: 'Nenhum usuário encontrado'});
+        }
+    }
+
+    static async editUser(req, res){
+        const {name, email, phone, password, confirmpassword} = req.body;
+
+        try{
+            const user = await getUserByToken(req.headers.authorization);
+
+            if(!name){
+                res.status(422).json({message: 'O nome é obrigatório'});
+                return;
+            }
+            if(!email){
+                res.status(422).json({message: 'O email é obrigatório'});
+                return;
+            }
+            const userExists = await User.findOne({email: email});
+            if(user.email !== email && userExists){
+                res.status(422).json({message: 'Já existe um usuário cadastrado com este endereço de email'});
+                return;
+            }
+    
+    
+            if(!phone){
+                res.status(422).json({message: 'O telefone é obrigatório'});
+                return;
+            }
+            if(!password){
+                res.status(422).json({message: 'A senha é obrigatória'});
+                return;
+            }
+            if(!confirmpassword){
+                res.status(422).json({message: 'A confirmação de senha é obrigatória'});
+                return;
+            }
+
+
+
+
+            
+        }catch(e){
+            res.status(422).json({message: 'Usuário não encontrado'});
         }
     }
 }
